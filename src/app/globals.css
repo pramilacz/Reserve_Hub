@@ -1,0 +1,146 @@
+@import "tailwindcss";
+
+/* Design tokens. One accent (petrol blue) carries "booked"; red is reserved for problems. */
+@theme {
+  --font-sans: "Public Sans Variable", ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+
+  --color-paper: #f1f4f6;
+  --color-surface: #ffffff;
+  --color-ink: #14202b;
+  --color-muted: #566676;
+  --color-line: #d3dce3;
+  --color-line-strong: #aebbc6;
+  --color-accent: #0b5c7a;
+  --color-accent-strong: #08465e;
+  --color-accent-soft: #d8e8ef;
+  --color-danger: #b3261e;
+  --color-danger-soft: #fbe8e6;
+  --color-ok: #1d6b45;
+  --color-ok-soft: #e0f1e7;
+  --color-warn-soft: #fdf1d6;
+}
+
+html {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  min-height: 100vh;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-md border px-3.5 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+    border-color: var(--color-line-strong);
+    background: var(--color-surface);
+    color: var(--color-ink);
+  }
+  .btn:hover:not(:disabled) {
+    background: var(--color-paper);
+  }
+  .btn-primary {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: #fff;
+  }
+  .btn-primary:hover:not(:disabled) {
+    background: var(--color-accent-strong);
+  }
+  .btn-danger {
+    border-color: var(--color-danger);
+    color: var(--color-danger);
+  }
+  .btn-danger:hover:not(:disabled) {
+    background: var(--color-danger-soft);
+  }
+  .btn-danger-solid {
+    background: var(--color-danger);
+    border-color: var(--color-danger);
+    color: #fff;
+  }
+  .btn-danger-solid:hover:not(:disabled) {
+    background: #8f1d17;
+  }
+  .btn-sm {
+    @apply px-2.5 py-1 text-xs;
+  }
+
+  .field {
+    @apply block w-full rounded-md border px-3 py-2 text-sm;
+    border-color: var(--color-line-strong);
+    background: var(--color-surface);
+  }
+  .field:disabled {
+    background: var(--color-paper);
+    color: var(--color-muted);
+  }
+  .label {
+    @apply mb-1 block text-sm font-medium;
+  }
+  .hint {
+    @apply mt-1 text-xs;
+    color: var(--color-muted);
+  }
+
+  .panel {
+    @apply rounded-lg border;
+    background: var(--color-surface);
+    border-color: var(--color-line);
+  }
+
+  .badge {
+    @apply inline-block rounded px-2 py-0.5 text-xs font-medium;
+  }
+
+  .table-wrap {
+    @apply overflow-x-auto rounded-lg border;
+    background: var(--color-surface);
+    border-color: var(--color-line);
+  }
+  .table {
+    @apply w-full text-left text-sm;
+  }
+  .table th {
+    @apply px-4 py-2.5 text-xs font-semibold;
+    color: var(--color-muted);
+    border-bottom: 1px solid var(--color-line);
+    background: #f8fafb;
+  }
+  .table td {
+    @apply px-4 py-3 align-top;
+    border-bottom: 1px solid var(--color-line);
+  }
+  .table tr:last-child td {
+    border-bottom: 0;
+  }
+
+  /* hairline dividers between direct children, in the theme's line colour */
+  .divided > * + * {
+    border-top: 1px solid var(--color-line);
+  }
+
+  .link {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .link:hover {
+    color: var(--color-accent-strong);
+  }
+}
