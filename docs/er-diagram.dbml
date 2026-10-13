@@ -1,0 +1,68 @@
+// Paste this into https://dbdiagram.io/d (Import > DBML) to get a shareable link.
+
+Enum Role {
+  ADMIN
+  MEMBER
+}
+
+Enum ResourceType {
+  ROOM
+  EQUIPMENT
+  VEHICLE
+  OTHER
+}
+
+Enum ReservationStatus {
+  CONFIRMED
+  CANCELLED
+}
+
+Table users {
+  id text [pk]
+  name text [not null]
+  email text [not null, unique]
+  role Role [not null, default: 'MEMBER']
+  createdAt timestamptz [not null, default: `now()`]
+}
+
+Table resources {
+  id text [pk]
+  name text [not null, unique]
+  type ResourceType [not null]
+  location text
+  capacity int
+  description text
+  isActive boolean [not null, default: true, note: 'false = retired: existing bookings stay, new ones are refused']
+  createdAt timestamptz [not null, default: `now()`]
+  updatedAt timestamptz [not null]
+}
+
+Table reservations {
+  id text [pk]
+  resourceId text [not null]
+  userId text [not null]
+  title text [not null]
+  notes text
+  startTime timestamptz [not null]
+  endTime timestamptz [not null]
+  status ReservationStatus [not null, default: 'CONFIRMED']
+  cancelledAt timestamptz
+  createdAt timestamptz [not null, default: `now()`]
+  updatedAt timestamptz [not null]
+
+  indexes {
+    (resourceId, startTime)
+    (userId, startTime)
+    status
+  }
+
+  Note: '''
+    CHECK (endTime > startTime)
+    EXCLUDE USING gist (resourceId WITH =, tstzrange(startTime, endTime, '[)') WITH &&)
+      WHERE (status = 'CONFIRMED')
+    -> two confirmed reservations for one resource can never overlap.
+  '''
+}
+
+Ref: reservations.resourceId > resources.id [delete: restrict]
+Ref: reservations.userId > users.id [delete: restrict]
