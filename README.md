@@ -5,6 +5,9 @@ Built for the PrimeWave Lab software engineering internship assessment.
 
 **Stack:** Next.js 16 (App Router) · TypeScript · PostgreSQL · Prisma · Zod · Tailwind CSS · Vitest
 
+**Preview:**
+<img width="1920" height="1020" alt="image" src="https://github.com/user-attachments/assets/dd8a208e-a80c-4c92-b4be-170f1d9d863d" />
+
 ## The problem, and the approach
 
 The organization's pain is *overlapping reservations and unclear availability*, caused by informal
