@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { queueToast } from "@/lib/toast";
 
 /** Two-step cancel so a stray click never frees someone's slot. */
 export function CancelButton({
@@ -29,6 +30,7 @@ export function CancelButton({
       setBusy(false);
       return;
     }
+    queueToast("Reservation cancelled", "info");
     if (redirectTo) router.push(redirectTo);
     router.refresh();
     setBusy(false);
@@ -45,7 +47,8 @@ export function CancelButton({
   return (
     <span className="inline-flex flex-wrap items-center gap-2">
       <button className={`btn btn-danger-solid ${size}`} onClick={cancel} disabled={busy}>
-        {busy ? "Cancelling…" : "Yes, cancel it"}
+        {busy && <span className="spinner" />}
+        {busy ? "Cancelling" : "Yes, cancel it"}
       </button>
       <button className={`btn ${size}`} onClick={() => setConfirming(false)} disabled={busy}>
         Keep it

@@ -23,10 +23,10 @@ export function UserSwitcher({ users, currentId }: { users: U[]; currentId: stri
   }
 
   return (
-    <label className="flex items-center gap-2 text-sm">
-      <span style={{ color: "var(--color-muted)" }}>Signed in as</span>
+    <label className="block px-2 text-xs" style={{ color: "#9aa3e6" }}>
+      Switch user (demo)
       <select
-        className="field !w-auto !py-1.5"
+        className="field mt-1 !py-1.5"
         value={currentId}
         disabled={busy}
         onChange={(e) => switchTo(e.target.value)}

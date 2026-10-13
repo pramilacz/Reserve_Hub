@@ -61,8 +61,9 @@ is needed at runtime, which makes installs simpler, and it matches the direction
 
 ### UI
 The home screen is the schedule board because "who has what, and when is it free?" is the question people
-ask most. It is a server component (no client JavaScript needed for the board). Colour carries meaning: one
-petrol-blue accent for "booked", a solid shade for your own bookings, red only for problems.
+ask most. It is a server component (no client JavaScript needed for the board). Colour carries meaning: indigo is the brand, each resource type has its own colour (rooms, equipment, vehicles),
+a solid block is your own booking and a tinted one is someone else's, and red is used only for problems. Motion
+is purposeful (entrances, feedback, toasts) and respects `prefers-reduced-motion`.
 
 ## What I would do next
 Recurring reservations; approval for sensitive resources; email/calendar (ICS) notifications; real

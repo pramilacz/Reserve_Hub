@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { queueToast } from "@/lib/toast";
 
 type Initial = {
   id?: string;
@@ -52,6 +53,7 @@ export function ResourceForm({ mode, initial }: { mode: "create" | "edit"; initi
         }
         return;
       }
+      queueToast(mode === "create" ? "Resource added" : "Resource saved");
       router.push("/resources");
       router.refresh();
     } catch {
@@ -64,7 +66,7 @@ export function ResourceForm({ mode, initial }: { mode: "create" | "edit"; initi
   return (
     <form onSubmit={onSubmit} className="max-w-xl space-y-5" noValidate>
       {error && (
-        <div role="alert" className="rounded-md border px-4 py-3 text-sm" style={{ borderColor: "var(--color-danger)", background: "var(--color-danger-soft)" }}>
+        <div role="alert" className="anim-pop rounded-lg border px-4 py-3 text-sm" style={{ borderColor: "var(--color-danger)", background: "var(--color-danger-soft)" }}>
           {error}
         </div>
       )}
@@ -112,7 +114,8 @@ export function ResourceForm({ mode, initial }: { mode: "create" | "edit"; initi
 
       <div className="flex gap-3">
         <button className="btn btn-primary" type="submit" disabled={busy || v.name.trim().length < 2}>
-          {busy ? "Saving…" : mode === "create" ? "Add resource" : "Save changes"}
+          {busy && <span className="spinner" />}
+          {busy ? "Saving" : mode === "create" ? "Add resource" : "Save changes"}
         </button>
         <button className="btn" type="button" onClick={() => router.push("/resources")}>Cancel</button>
       </div>

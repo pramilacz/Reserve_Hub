@@ -1,4 +1,3 @@
-# Local PostgreSQL for development. Start with: docker compose up -d
 services:
   db:
     image: postgres:16
@@ -8,9 +7,9 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: reservations
     ports:
-      - "5432:5432"
+      - "55432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - pgdata_fresh:/var/lib/postgresql/data
 
 volumes:
-  pgdata:
+  pgdata_fresh:

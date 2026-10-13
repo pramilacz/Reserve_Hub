@@ -20,7 +20,7 @@ export default async function UsagePage({ searchParams }: Props) {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Usage</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight">Usage</h1>
           <p className="mt-1 max-w-2xl text-sm" style={{ color: "var(--color-muted)" }}>
             {formatDateShort(stats.from)} to {formatDateShort(stats.to)}: {stats.totalBookings} confirmed reservation
             {stats.totalBookings === 1 ? "" : "s"} totalling {stats.totalHours} hours.{" "}
@@ -35,7 +35,7 @@ export default async function UsagePage({ searchParams }: Props) {
               href={`/usage?days=${d}`}
               aria-current={d === days ? "page" : undefined}
               className="btn"
-              style={d === days ? { background: "var(--color-accent-soft)", borderColor: "var(--color-accent)" } : undefined}
+              style={d === days ? { background: "var(--color-accent-soft)", borderColor: "var(--color-accent)", color: "var(--color-accent-strong)" } : undefined}
             >
               {d} days
             </Link>
@@ -54,7 +54,7 @@ export default async function UsagePage({ searchParams }: Props) {
             </tr>
           </thead>
           <tbody>
-            {stats.resources.map((r) => (
+            {stats.resources.map((r, idx) => (
               <tr key={r.id} style={{ opacity: r.isActive ? 1 : 0.6 }}>
                 <td>
                   <span className="block font-medium">{r.name}</span>
@@ -74,8 +74,12 @@ export default async function UsagePage({ searchParams }: Props) {
                       aria-label={`${Math.round(r.utilization * 100)} percent`}
                     >
                       <div
-                        className="h-full"
-                        style={{ width: `${Math.max(r.utilization * 100, r.hours > 0 ? 1 : 0)}%`, background: "var(--color-accent)" }}
+                        className="anim-grow h-full rounded-sm"
+                        style={{
+                          width: `${Math.max(r.utilization * 100, r.hours > 0 ? 1 : 0)}%`,
+                          background: "linear-gradient(90deg, #7c6cff, #4f46e5)",
+                          ["--i" as string]: idx,
+                        } as React.CSSProperties}
                       />
                     </div>
                     <span className="w-10 text-right text-xs" style={{ color: "var(--color-muted)" }}>

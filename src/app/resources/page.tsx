@@ -15,7 +15,7 @@ export default async function ResourcesPage() {
     <div className="space-y-5">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Resources</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight">Resources</h1>
           <p className="mt-1 text-sm" style={{ color: "var(--color-muted)" }}>
             Everything that can be reserved. {isAdmin ? "You can add, edit and retire resources." : "Administrators manage this list."}
           </p>
@@ -46,8 +46,8 @@ export default async function ResourcesPage() {
               </tr>
             </thead>
             <tbody>
-              {resources.map((r) => (
-                <tr key={r.id} style={{ opacity: r.isActive ? 1 : 0.65 }}>
+              {resources.map((r, idx) => (
+                <tr key={r.id} className="anim-rise" style={{ opacity: r.isActive ? 1 : 0.65, ["--i" as string]: Math.min(idx, 12) } as React.CSSProperties}>
                   <td>
                     <span className="block font-medium">{r.name}</span>
                     {r.description && (

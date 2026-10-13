@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { RULES } from "@/lib/config";
+import { queueToast } from "@/lib/toast";
 import { formatRange, formatTime, localParts, todayInOrg, zonedToUtc } from "@/lib/time";
 
 type ResourceOption = { id: string; name: string; type: string; location: string | null };
@@ -139,6 +140,7 @@ export function ReservationForm({
         if (res.status === 409) setRefreshKey((k) => k + 1); // someone just took it: refresh the list
         return;
       }
+      queueToast(mode === "create" ? "Reservation confirmed" : "Reservation updated");
       router.push(`/?date=${date}`);
       router.refresh();
     } catch {
@@ -158,7 +160,7 @@ export function ReservationForm({
     <form onSubmit={onSubmit} className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]" noValidate>
       <div className="space-y-5">
         {error && (
-          <div role="alert" className="rounded-md border px-4 py-3 text-sm" style={{ borderColor: "var(--color-danger)", background: "var(--color-danger-soft)" }}>
+          <div role="alert" className="anim-pop rounded-lg border px-4 py-3 text-sm" style={{ borderColor: "var(--color-danger)", background: "var(--color-danger-soft)" }}>
             {error}
           </div>
         )}
@@ -222,7 +224,7 @@ export function ReservationForm({
         </p>
 
         {clashes.length > 0 && !error && (
-          <div role="status" className="rounded-md border px-4 py-3 text-sm" style={{ borderColor: "#d9b24a", background: "var(--color-warn-soft)" }}>
+          <div role="status" className="anim-pop rounded-lg border px-4 py-3 text-sm" style={{ borderColor: "#e8b04a", background: "var(--color-warn-soft)" }}>
             This time overlaps{" "}
             {clashes.map((c, i) => (
               <span key={c.id}>
@@ -251,7 +253,8 @@ export function ReservationForm({
 
         <div className="flex gap-3">
           <button type="submit" className="btn btn-primary" disabled={submitting || !resourceId || !title.trim()}>
-            {submitting ? "Saving…" : mode === "create" ? "Reserve" : "Save changes"}
+            {submitting && <span className="spinner" />}
+            {submitting ? "Saving" : mode === "create" ? "Reserve" : "Save changes"}
           </button>
           <button type="button" className="btn" onClick={() => router.back()}>
             Back
@@ -260,7 +263,7 @@ export function ReservationForm({
       </div>
 
       {/* availability for the chosen day */}
-      <aside aria-label="Availability" className="panel h-fit p-4">
+      <aside aria-label="Availability" className="panel anim-rise h-fit p-4 shadow-sm">
         <h2 className="text-sm font-semibold">Availability on this day</h2>
         {availError ? (
           <p className="hint">Could not load availability.</p>

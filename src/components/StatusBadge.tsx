@@ -1,4 +1,13 @@
-export function StatusBadge({ kind, children }: { kind: "ok" | "muted" | "danger" | "accent"; children: React.ReactNode }) {
+export function StatusBadge({
+  kind,
+  live,
+  children,
+}: {
+  kind: "ok" | "muted" | "danger" | "accent";
+  /** Show a pulsing dot (for something happening right now). */
+  live?: boolean;
+  children: React.ReactNode;
+}) {
   const styles = {
     ok: { background: "var(--color-ok-soft)", color: "var(--color-ok)" },
     muted: { background: "var(--color-paper)", color: "var(--color-muted)" },
@@ -7,6 +16,7 @@ export function StatusBadge({ kind, children }: { kind: "ok" | "muted" | "danger
   }[kind];
   return (
     <span className="badge" style={styles}>
+      {live && <span className="live-dot" aria-hidden />}
       {children}
     </span>
   );

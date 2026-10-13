@@ -52,7 +52,7 @@ export default async function ReservationsPage({ searchParams }: Props) {
     <div className="space-y-5">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Reservations</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight">Reservations</h1>
           <p className="mt-1 text-sm" style={{ color: "var(--color-muted)" }}>
             {total} match{total === 1 ? "" : "es"}.{" "}
             <Link href={`/reservations?userId=${user.id}&status=CONFIRMED&from=${todayInOrg()}&to=`} className="link">
@@ -126,11 +126,11 @@ export default async function ReservationsPage({ searchParams }: Props) {
               </tr>
             </thead>
             <tbody>
-              {items.map((r) => {
+              {items.map((r, idx) => {
                 const canManage = user.role === "ADMIN" || r.userId === user.id;
                 const cancellable = canManage && r.status === "CONFIRMED" && r.endTime.getTime() > nowMs;
                 return (
-                  <tr key={r.id}>
+                  <tr key={r.id} className="anim-rise" style={{ ["--i" as string]: Math.min(idx, 12) } as React.CSSProperties}>
                     <td className="whitespace-nowrap">
                       <span className="block font-medium">{formatDate(r.startTime)}</span>
                       <span style={{ color: "var(--color-muted)" }}>{formatRange(r.startTime, r.endTime)}</span>

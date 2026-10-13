@@ -1,23 +1,30 @@
 @import "tailwindcss";
 
-/* Design tokens. One accent (petrol blue) carries "booked"; red is reserved for problems. */
+/* Reserve Hub design tokens. Indigo is the brand; rooms, equipment and vehicles each get a colour. */
 @theme {
   --font-sans: "Public Sans Variable", ui-sans-serif, system-ui, "Segoe UI", sans-serif;
 
-  --color-paper: #f1f4f6;
+  --color-paper: #f3f4fb;
   --color-surface: #ffffff;
-  --color-ink: #14202b;
-  --color-muted: #566676;
-  --color-line: #d3dce3;
-  --color-line-strong: #aebbc6;
-  --color-accent: #0b5c7a;
-  --color-accent-strong: #08465e;
-  --color-accent-soft: #d8e8ef;
-  --color-danger: #b3261e;
-  --color-danger-soft: #fbe8e6;
-  --color-ok: #1d6b45;
-  --color-ok-soft: #e0f1e7;
-  --color-warn-soft: #fdf1d6;
+  --color-ink: #181b3a;
+  --color-muted: #5c6285;
+  --color-line: #dcdff0;
+  --color-line-strong: #b5bad6;
+  --color-accent: #4f46e5;
+  --color-accent-strong: #3b32c4;
+  --color-accent-soft: #e6e8ff;
+  --color-sidebar: #151846;
+  --color-danger: #c42b3a;
+  --color-danger-soft: #fde9ec;
+  --color-ok: #137a52;
+  --color-ok-soft: #dff5ea;
+  --color-warn: #b45309;
+  --color-warn-soft: #fff1d6;
+
+  --color-type-room: #4f46e5;
+  --color-type-equipment: #0b7f73;
+  --color-type-vehicle: #b45309;
+  --color-type-other: #5b6180;
 }
 
 html {
@@ -26,10 +33,15 @@ html {
   font-family: var(--font-sans);
   font-variant-numeric: tabular-nums;
   -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
 }
 
 body {
   min-height: 100vh;
+}
+
+::selection {
+  background: var(--color-accent-soft);
 }
 
 :focus-visible {
@@ -37,30 +49,113 @@ body {
   outline-offset: 2px;
 }
 
+/* ------------------------------ Motion ------------------------------ */
+
+@keyframes fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes pop {
+  from { opacity: 0; transform: scale(0.94); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes grow-x {
+  from { opacity: 0; transform: scaleX(0.6) translateY(3px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(196, 43, 58, 0.55); }
+  70% { box-shadow: 0 0 0 9px rgba(196, 43, 58, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(196, 43, 58, 0); }
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.8); }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes shimmer {
+  to { background-position: -200% 0; }
+}
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(16px) scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes draw {
+  from { stroke-dashoffset: 24; }
+  to { stroke-dashoffset: 0; }
+}
+
+.anim-grow {
+  transform-origin: left center;
+  animation: grow-x 0.8s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+  animation-delay: calc(var(--i, 0) * 60ms + 200ms);
+}
+.page-fade { animation: fade 0.3s ease both; }
+.anim-rise {
+  animation: rise 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: calc(var(--i, 0) * 45ms);
+}
+.anim-pop {
+  animation: pop 0.4s cubic-bezier(0.2, 0.8, 0.3, 1.2) both;
+  animation-delay: calc(var(--i, 0) * 60ms);
+}
+
+/* Logo: the check draws itself, the tile tilts slightly on hover. */
+.logo-check {
+  stroke-dasharray: 24;
+  animation: draw 0.7s 0.25s ease-out both;
+}
+.logo-mark {
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.3, 1.4);
+  filter: drop-shadow(0 4px 10px rgba(79, 70, 229, 0.35));
+}
+a:hover > .logo-mark,
+a:hover .logo-mark {
+  transform: rotate(-6deg) scale(1.08);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  * {
+  *, *::before, *::after {
     transition: none !important;
     animation: none !important;
+    scroll-behavior: auto !important;
   }
 }
 
 @layer components {
+  /* ----- buttons ----- */
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-md border px-3.5 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border px-3.5 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50;
     border-color: var(--color-line-strong);
     background: var(--color-surface);
     color: var(--color-ink);
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease,
+      border-color 0.18s ease, color 0.18s ease;
   }
   .btn:hover:not(:disabled) {
-    background: var(--color-paper);
+    transform: translateY(-1px);
+    border-color: var(--color-accent);
+    box-shadow: 0 6px 16px -6px rgba(59, 50, 196, 0.35);
+  }
+  .btn:active:not(:disabled) {
+    transform: translateY(0) scale(0.97);
+    box-shadow: none;
   }
   .btn-primary {
-    background: var(--color-accent);
-    border-color: var(--color-accent);
+    background: linear-gradient(135deg, #6258f5, #4338ca);
+    border-color: #4338ca;
     color: #fff;
   }
   .btn-primary:hover:not(:disabled) {
-    background: var(--color-accent-strong);
+    background: linear-gradient(135deg, #7066ff, #4f46e5);
+    color: #fff;
+    box-shadow: 0 10px 22px -8px rgba(79, 70, 229, 0.7);
   }
   .btn-danger {
     border-color: var(--color-danger);
@@ -68,6 +163,8 @@ body {
   }
   .btn-danger:hover:not(:disabled) {
     background: var(--color-danger-soft);
+    border-color: var(--color-danger);
+    box-shadow: 0 6px 16px -6px rgba(196, 43, 58, 0.4);
   }
   .btn-danger-solid {
     background: var(--color-danger);
@@ -75,41 +172,82 @@ body {
     color: #fff;
   }
   .btn-danger-solid:hover:not(:disabled) {
-    background: #8f1d17;
+    background: #a3202e;
+    border-color: #a3202e;
+    color: #fff;
   }
   .btn-sm {
     @apply px-2.5 py-1 text-xs;
   }
 
+  .spinner {
+    display: inline-block;
+    width: 0.9em;
+    height: 0.9em;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 999px;
+    animation: spin 0.7s linear infinite;
+  }
+
+  /* ----- forms ----- */
   .field {
-    @apply block w-full rounded-md border px-3 py-2 text-sm;
+    @apply block w-full rounded-lg border px-3 py-2 text-sm;
     border-color: var(--color-line-strong);
     background: var(--color-surface);
+    color: var(--color-ink);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .field:hover:not(:disabled) {
+    border-color: var(--color-accent);
+  }
+  .field:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.16);
   }
   .field:disabled {
     background: var(--color-paper);
     color: var(--color-muted);
   }
   .label {
-    @apply mb-1 block text-sm font-medium;
+    @apply mb-1 block text-sm font-semibold;
   }
   .hint {
     @apply mt-1 text-xs;
     color: var(--color-muted);
   }
 
+  /* ----- surfaces ----- */
   .panel {
-    @apply rounded-lg border;
+    @apply rounded-xl border;
     background: var(--color-surface);
     border-color: var(--color-line);
   }
-
-  .badge {
-    @apply inline-block rounded px-2 py-0.5 text-xs font-medium;
+  .lift {
+    transition: transform 0.22s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.22s ease,
+      border-color 0.22s ease;
+  }
+  .lift:hover {
+    transform: translateY(-3px);
+    border-color: var(--color-line-strong);
+    box-shadow: 0 16px 32px -16px rgba(40, 36, 120, 0.35);
   }
 
+  .badge {
+    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold;
+  }
+  .live-dot {
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 999px;
+    background: currentColor;
+    animation: pulse-dot 1.4s ease-in-out infinite;
+  }
+
+  /* ----- tables ----- */
   .table-wrap {
-    @apply overflow-x-auto rounded-lg border;
+    @apply overflow-x-auto rounded-xl border;
     background: var(--color-surface);
     border-color: var(--color-line);
   }
@@ -117,20 +255,23 @@ body {
     @apply w-full text-left text-sm;
   }
   .table th {
-    @apply px-4 py-2.5 text-xs font-semibold;
+    @apply px-4 py-3 text-xs font-semibold;
     color: var(--color-muted);
     border-bottom: 1px solid var(--color-line);
-    background: #f8fafb;
+    background: #f8f8fe;
   }
   .table td {
     @apply px-4 py-3 align-top;
     border-bottom: 1px solid var(--color-line);
+    transition: background-color 0.15s ease;
+  }
+  .table tbody tr:hover td {
+    background: #f6f6ff;
   }
   .table tr:last-child td {
     border-bottom: 0;
   }
 
-  /* hairline dividers between direct children, in the theme's line colour */
   .divided > * + * {
     border-top: 1px solid var(--color-line);
   }
@@ -138,9 +279,122 @@ body {
   .link {
     color: var(--color-accent);
     text-decoration: underline;
+    text-decoration-color: rgba(79, 70, 229, 0.3);
     text-underline-offset: 3px;
+    transition: color 0.15s ease, text-decoration-color 0.15s ease;
   }
   .link:hover {
     color: var(--color-accent-strong);
+    text-decoration-color: currentColor;
+  }
+
+  /* ----- sidebar navigation ----- */
+  .nav-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-radius: 0.6rem;
+    padding: 0.55rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #b8bfee;
+    transition: background-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
+  }
+  .nav-item svg {
+    transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.3, 1.5);
+  }
+  .nav-item:hover {
+    background: rgba(255, 255, 255, 0.09);
+    color: #fff;
+    transform: translateX(3px);
+  }
+  .nav-item:hover svg {
+    transform: scale(1.18) rotate(-4deg);
+  }
+  .nav-item[aria-current="page"] {
+    background: linear-gradient(90deg, rgba(124, 108, 255, 0.4), rgba(124, 108, 255, 0.12));
+    color: #fff;
+  }
+  .nav-item[aria-current="page"]::before {
+    content: "";
+    position: absolute;
+    left: -0.5rem;
+    top: 20%;
+    bottom: 20%;
+    width: 4px;
+    border-radius: 0 4px 4px 0;
+    background: #ffc857;
+    animation: grow-x 0.35s ease both;
+  }
+
+  /* ----- schedule board ----- */
+  .cell {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-accent);
+    font-weight: 700;
+    font-size: 0.95rem;
+    transition: background-color 0.12s ease;
+  }
+  .cell::after {
+    content: "+";
+    opacity: 0;
+    transform: scale(0.5);
+    transition: opacity 0.15s ease, transform 0.2s cubic-bezier(0.2, 0.8, 0.3, 1.6);
+  }
+  .cell:hover {
+    background: var(--color-accent-soft);
+  }
+  .cell:hover::after {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .booking {
+    animation: grow-x 0.45s cubic-bezier(0.2, 0.8, 0.3, 1.1) both;
+    animation-delay: calc(var(--i, 0) * 50ms + 150ms);
+    transform-origin: left center;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+  }
+  .booking:hover {
+    transform: translateY(-2px) scale(1.015);
+    box-shadow: 0 10px 22px -8px rgba(30, 27, 100, 0.45);
+    filter: saturate(1.15);
+    z-index: 5;
+  }
+  .now-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--color-danger);
+    pointer-events: none;
+    z-index: 4;
+  }
+  .now-line.now-first::before {
+    content: "";
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--color-danger);
+    animation: pulse-ring 1.8s ease-out infinite;
+  }
+
+  /* ----- loading skeleton ----- */
+  .skeleton {
+    border-radius: 0.75rem;
+    background: linear-gradient(100deg, #e9ebf8 30%, #f6f7fd 50%, #e9ebf8 70%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s linear infinite;
+  }
+
+  /* ----- toast ----- */
+  .toast {
+    animation: toast-in 0.4s cubic-bezier(0.2, 0.8, 0.3, 1.2) both;
   }
 }

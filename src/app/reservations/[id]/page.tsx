@@ -51,7 +51,7 @@ export default async function ReservationPage({ params }: Props) {
           ) : ended ? (
             <StatusBadge kind="muted">Finished</StatusBadge>
           ) : started ? (
-            <StatusBadge kind="accent">In progress</StatusBadge>
+            <StatusBadge kind="accent" live>In progress</StatusBadge>
           ) : (
             <StatusBadge kind="ok">Confirmed</StatusBadge>
           )}

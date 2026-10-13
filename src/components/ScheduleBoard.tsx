@@ -19,6 +19,14 @@ type BoardResource = {
   }[];
 };
 
+/** Each resource type has its own colour: solid = yours, tint = someone else's. */
+const TYPE_COLOR: Record<ResourceType, { solid: string; tint: string }> = {
+  ROOM: { solid: "var(--color-type-room)", tint: "#e6e8ff" },
+  EQUIPMENT: { solid: "var(--color-type-equipment)", tint: "#d8f2ee" },
+  VEHICLE: { solid: "var(--color-type-vehicle)", tint: "#ffead0" },
+  OTHER: { solid: "var(--color-type-other)", tint: "#eceef6" },
+};
+
 const HALF_HOURS = (RULES.CLOSE_HOUR - RULES.OPEN_HOUR) * 2;
 const SPAN_MIN = (RULES.CLOSE_HOUR - RULES.OPEN_HOUR) * 60;
 const OPEN_MIN = RULES.OPEN_HOUR * 60;
@@ -52,14 +60,15 @@ export function ScheduleBoard({
   const groups = new Map<ResourceType, BoardResource[]>();
   for (const r of resources) groups.set(r.type, [...(groups.get(r.type) ?? []), r]);
 
+  let rowIndex = 0;
   const hours = Array.from({ length: RULES.CLOSE_HOUR - RULES.OPEN_HOUR }, (_, i) => RULES.OPEN_HOUR + i);
 
   return (
-    <div className="table-wrap">
-      <div style={{ minWidth: 920 }}>
+    <div className="table-wrap shadow-sm">
+      <div style={{ minWidth: 820 }}>
         {/* time axis */}
-        <div className="flex border-b" style={{ borderColor: "var(--color-line)", background: "#f8fafb" }}>
-          <div className="w-48 shrink-0 px-4 py-2 text-xs font-semibold" style={{ color: "var(--color-muted)" }}>
+        <div className="flex border-b" style={{ borderColor: "var(--color-line)", background: "#f8f8fe" }}>
+          <div className="w-56 shrink-0 px-4 py-2 text-xs font-semibold" style={{ color: "var(--color-muted)" }}>
             Resource
           </div>
           <div className="relative flex-1">
@@ -83,11 +92,21 @@ export function ScheduleBoard({
               className="px-4 py-1.5 text-xs font-semibold"
               style={{ background: "var(--color-paper)", color: "var(--color-muted)" }}
             >
-              {TYPE_GROUP_LABEL[type]}
+              <span className="inline-flex items-center gap-2">
+                <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ background: TYPE_COLOR[type].solid }} />
+                {TYPE_GROUP_LABEL[type]}
+              </span>
             </div>
-            {rows.map((res) => (
-              <div key={res.id} className="flex border-t" style={{ borderColor: "var(--color-line)" }}>
-                <div className="w-48 shrink-0 px-4 py-2.5">
+            {rows.map((res) => {
+              const isFirstRow = rowIndex === 0;
+              rowIndex++;
+              return (
+              <div
+                key={res.id}
+                className="anim-rise flex border-t transition-colors hover:bg-[#fafaff]"
+                style={{ borderColor: "var(--color-line)", ["--i" as string]: rowIndex } as React.CSSProperties}
+              >
+                <div className="w-56 shrink-0 px-4 py-2.5">
                   <Link href={`/resources`} className="block text-sm font-semibold hover:underline">
                     {res.name}
                   </Link>
@@ -96,7 +115,7 @@ export function ScheduleBoard({
                   </span>
                 </div>
 
-                <div className="relative h-[3.75rem] flex-1">
+                <div className="relative h-16 flex-1">
                   {/* free cells: 30-minute click targets */}
                   <div className="absolute inset-0 grid" style={{ gridTemplateColumns: `repeat(${HALF_HOURS}, 1fr)` }}>
                     {Array.from({ length: HALF_HOURS }, (_, i) => {
@@ -106,15 +125,15 @@ export function ScheduleBoard({
                       const past = cellEnd <= now.getTime();
                       const strong = i % 2 === 0;
                       const cls = "h-full border-l";
-                      const style = { borderColor: strong ? "var(--color-line)" : "#e8eef2" };
+                      const style = { borderColor: strong ? "var(--color-line)" : "#ecedf7" };
                       if (past) {
-                        return <div key={i} className={cls} style={{ ...style, background: "#f6f8f9" }} aria-hidden />;
+                        return <div key={i} className={cls} style={{ ...style, background: "#f6f7fc" }} aria-hidden />;
                       }
                       return (
                         <Link
                           key={i}
                           href={`/reservations/new?resourceId=${res.id}&date=${date}&start=${time}`}
-                          className={`${cls} hover:bg-accent-soft`}
+                          className={`${cls} cell`}
                           style={style}
                           aria-label={`Reserve ${res.name} from ${formatTime(zonedToUtc(date, time))}`}
                           title={`Reserve from ${formatTime(zonedToUtc(date, time))}`}
@@ -130,18 +149,20 @@ export function ScheduleBoard({
                     const startMin = Math.max(s.date < date ? OPEN_MIN : s.minutesOfDay, OPEN_MIN);
                     const endMin = Math.min(e.date > date ? OPEN_MIN + SPAN_MIN : e.minutesOfDay, OPEN_MIN + SPAN_MIN);
                     const mine = b.user.id === currentUserId;
+                    const tone = TYPE_COLOR[res.type];
                     return (
                       <Link
                         key={b.id}
                         href={`/reservations/${b.id}`}
                         title={`${b.title}\n${formatRange(b.startTime, b.endTime)}\n${b.user.name}`}
-                        className="absolute inset-y-1 overflow-hidden rounded px-2 py-1 text-xs leading-tight"
+                        className="booking absolute inset-y-1.5 overflow-hidden rounded-lg px-2.5 py-1 text-xs leading-tight shadow-sm"
                         style={{
                           left: pct(startMin - OPEN_MIN),
                           width: pct(endMin - startMin),
-                          background: mine ? "var(--color-accent)" : "var(--color-accent-soft)",
+                          ["--i" as string]: res.reservations.indexOf(b),
+                          background: mine ? tone.solid : tone.tint,
                           color: mine ? "#fff" : "var(--color-ink)",
-                          borderLeft: `3px solid ${mine ? "var(--color-accent-strong)" : "var(--color-accent)"}`,
+                          borderLeft: `4px solid ${tone.solid}`,
                         }}
                       >
                         <span className="block truncate font-semibold">{b.title}</span>
@@ -153,13 +174,14 @@ export function ScheduleBoard({
                   {showNow && (
                     <div
                       aria-hidden
-                      className="pointer-events-none absolute inset-y-0 w-0.5"
-                      style={{ left: pct(nowParts.minutesOfDay - OPEN_MIN), background: "var(--color-danger)" }}
+                      className={`now-line ${isFirstRow ? "now-first" : ""}`}
+                      style={{ left: pct(nowParts.minutesOfDay - OPEN_MIN) }}
                     />
                   )}
                 </div>
               </div>
-            ))}
+            );
+            })}
           </section>
         ))}
       </div>

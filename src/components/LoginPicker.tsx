@@ -21,17 +21,24 @@ export function LoginPicker({ users }: { users: U[] }) {
   }
 
   return (
-    <ul className="panel divided mt-6">
-      {users.map((u) => (
-        <li key={u.id}>
+    <ul className="mt-8 space-y-2.5">
+      {users.map((u, i) => (
+        <li key={u.id} className="anim-rise" style={{ ["--i" as string]: i + 3 } as React.CSSProperties}>
           <button
-            className="flex w-full items-center justify-between gap-4 px-4 py-3 text-left hover:bg-paper disabled:opacity-60"
+            className="panel lift flex w-full items-center gap-4 px-4 py-3 text-left disabled:opacity-60"
             disabled={pending !== null}
             onClick={() => pick(u.id)}
           >
-            <span>
+            <span
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-sm font-bold text-white"
+              style={{ background: "linear-gradient(135deg, #7c6cff, #3b30d1)" }}
+              aria-hidden
+            >
+              {u.name.split(" ").map((w) => w[0]).slice(0, 2).join("")}
+            </span>
+            <span className="min-w-0 flex-1">
               <span className="block text-sm font-semibold">{u.name}</span>
-              <span className="block text-xs" style={{ color: "var(--color-muted)" }}>
+              <span className="block truncate text-xs" style={{ color: "var(--color-muted)" }}>
                 {u.email}
               </span>
             </span>
@@ -42,7 +49,15 @@ export function LoginPicker({ users }: { users: U[] }) {
                 color: u.role === "ADMIN" ? "var(--color-accent-strong)" : "var(--color-muted)",
               }}
             >
-              {pending === u.id ? "Signing in…" : u.role === "ADMIN" ? "Administrator" : "Member"}
+              {pending === u.id ? (
+                <>
+                  <span className="spinner" /> Signing in
+                </>
+              ) : u.role === "ADMIN" ? (
+                "Administrator"
+              ) : (
+                "Member"
+              )}
             </span>
           </button>
         </li>
