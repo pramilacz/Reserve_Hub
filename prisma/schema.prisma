@@ -1,0 +1,81 @@
+// Resource Reservation Management System - database schema.
+//
+// NOTE: the "no overlapping reservations" rule is enforced by a PostgreSQL
+// exclusion constraint that Prisma cannot express. It lives in the migration
+// file prisma/migrations/*_init/migration.sql. Do not remove it.
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["queryCompiler"]
+  engineType      = "client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  MEMBER
+}
+
+enum ResourceType {
+  ROOM
+  EQUIPMENT
+  VEHICLE
+  OTHER
+}
+
+enum ReservationStatus {
+  CONFIRMED
+  CANCELLED
+}
+
+model User {
+  id           String        @id @default(uuid())
+  name         String
+  email        String        @unique
+  role         Role          @default(MEMBER)
+  createdAt    DateTime      @default(now()) @db.Timestamptz(3)
+  reservations Reservation[]
+
+  @@map("users")
+}
+
+model Resource {
+  id           String        @id @default(uuid())
+  name         String        @unique
+  type         ResourceType
+  location     String?
+  capacity     Int?
+  description  String?
+  isActive     Boolean       @default(true)
+  createdAt    DateTime      @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime      @updatedAt @db.Timestamptz(3)
+  reservations Reservation[]
+
+  @@map("resources")
+}
+
+model Reservation {
+  id          String            @id @default(uuid())
+  resourceId  String
+  userId      String
+  title       String
+  notes       String?
+  startTime   DateTime          @db.Timestamptz(3)
+  endTime     DateTime          @db.Timestamptz(3)
+  status      ReservationStatus @default(CONFIRMED)
+  cancelledAt DateTime?         @db.Timestamptz(3)
+  createdAt   DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime          @updatedAt @db.Timestamptz(3)
+
+  resource Resource @relation(fields: [resourceId], references: [id], onDelete: Restrict)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([resourceId, startTime])
+  @@index([userId, startTime])
+  @@index([status])
+  @@map("reservations")
+}
