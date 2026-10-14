@@ -1,7 +1,8 @@
 # Entity Relationship diagram
 
-Renders on GitHub as-is. For the shareable link the assessment asks for, import
-[`er-diagram.dbml`](./er-diagram.dbml) into <https://dbdiagram.io/d> and share that link.
+**Shareable diagram:** https://dbdiagram.io/d/Reserve-Hub-ER-Diagram-6acf4378064322c8694755c6
+The diagram below is also drawn directly by GitHub, so it stays visible even without the link.
+![ER diagram](er-diagram.png)
 
 ```mermaid
 erDiagram
