@@ -2,6 +2,7 @@
 
 **Shareable diagram:** https://dbdiagram.io/d/Reserve-Hub-ER-Diagram-6acf4378064322c8694755c6
 The diagram below is also drawn directly by GitHub, so it stays visible even without the link.
+
 ![ER diagram](er-diagram.png)
 
 ```mermaid
